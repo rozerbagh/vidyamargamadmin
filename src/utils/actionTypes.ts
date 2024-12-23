@@ -1,0 +1,9 @@
+enum ActionTypes {
+  IS_AUTH = "ISAUTH",
+  AUTH_LOADING = "AUTH_LOADING",
+  AUTH_LOGOUT = "AUTH_LOGOUT",
+  AUTH_SUCCESS = "AUTH_SUCCESS",
+  AUTH_FAILED = "AUTH_FAILED",
+  SET_USER_DETAILS = "SET_USER_DETAILS",
+}
+export default ActionTypes;

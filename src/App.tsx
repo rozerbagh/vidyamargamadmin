@@ -1,25 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import {
+  // createBrowserRouter,
+  // RouterProvider,
+  BrowserRouter as Router, useRoutes,
+  Route
+} from "react-router-dom";
+import CustomLayout from './Layout/Layout';
+import routes from "./routes";
+// const router = createBrowserRouter([
+//   {
+//     path: "/",
+//     element: <CustomLayout><Home title="VidyaMargam" /></CustomLayout>,
+//   },
+//   {
+//     path: "/schools",
+//     element: <CustomLayout><Schools title="Schools 1" /></CustomLayout>,
+//   },
+//   {
+//     path: "/buses",
+//     element: <CustomLayout><BusesListing title="Buses List" /></CustomLayout>,
+//   },
+//   {
+//     path: "/users",
+//     element: <CustomLayout><Users title="Customers" /></CustomLayout>,
+//   },
+//   {
+//     path: "/login",
+//     element: <LoginPage />,
+//   },
+//   {
+//     path: "/signup",
+//     element: <RegistrationPage />,
+//   },
+// ]);
 function App() {
+  const AppRoutes = () => {
+    const element = useRoutes(
+      routes.map(route => ({
+        path: route.ref,
+        element: <CustomLayout><route.component title={route.title} /></CustomLayout>
+      }))
+    );
+    return element;
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <AppRoutes />
+      </Router>
+      {/* <RouterProvider router={router} /> */}
+    </>
   );
 }
 
