@@ -25,6 +25,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './Header.module.css';
+import useStorage from '../../hooks/useStorage';
 
 const user = {
   name: 'Jane Spoonfighter',
@@ -47,6 +48,7 @@ const HeaderTabs: React.FC = () => {
   const theme = useMantineTheme();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { setCookie } = useStorage()
 
   // const items = tabs.map((tab) => (
   //   <Tabs.Tab value={tab} key={tab}>
@@ -105,7 +107,7 @@ const HeaderTabs: React.FC = () => {
               <Menu.Item leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}>
                 Change account
               </Menu.Item>
-              <Menu.Item leftSection={<IconLogout size={16} stroke={1.5} />}>Logout</Menu.Item>
+              <Menu.Item leftSection={<IconLogout size={16} stroke={1.5} />} onClick={() => setCookie('token', null)}>Logout</Menu.Item>
 
               <Menu.Divider />
 

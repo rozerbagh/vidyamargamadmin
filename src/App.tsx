@@ -9,8 +9,8 @@ import { MantineProvider } from "@mantine/core";
 import routes from "./routes";
 import useStorage from "./hooks/useStorage";
 import DashboardLayout from "./Layout/Layout";
-import LoginPage from "./pages/Login";
-import RegistrationPage from "./pages/Registration";
+import LoginPage from "./pages/Auth/Login";
+import RegistrationPage from "./pages/Auth/Registration";
 
 const App: React.FC = () => {
   const { cookies } = useStorage();
