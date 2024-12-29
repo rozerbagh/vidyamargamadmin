@@ -14,7 +14,7 @@ export interface RegistrationInterface {
   password?: string;
   phoneno: string;
   role: number;
-  gps_id: string | "9172159029";
+  gps_id: string;
 };
 
 export interface SchoolObject {

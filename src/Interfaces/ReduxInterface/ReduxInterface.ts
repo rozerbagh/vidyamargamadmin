@@ -12,6 +12,7 @@ export interface UserInterface {
   address: string;
   status: number;
   role: number;
+  _id: string;
 }
 
 export interface AuthInterface {

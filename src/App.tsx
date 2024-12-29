@@ -1,55 +1,57 @@
 import {
   // createBrowserRouter,
   // RouterProvider,
-  BrowserRouter as Router, useRoutes,
-  Route
+  BrowserRouter as Router,
+  useRoutes,
+  Navigate,
 } from "react-router-dom";
-import CustomLayout from './Layout/Layout';
+import { MantineProvider } from "@mantine/core";
 import routes from "./routes";
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <CustomLayout><Home title="VidyaMargam" /></CustomLayout>,
-//   },
-//   {
-//     path: "/schools",
-//     element: <CustomLayout><Schools title="Schools 1" /></CustomLayout>,
-//   },
-//   {
-//     path: "/buses",
-//     element: <CustomLayout><BusesListing title="Buses List" /></CustomLayout>,
-//   },
-//   {
-//     path: "/users",
-//     element: <CustomLayout><Users title="Customers" /></CustomLayout>,
-//   },
-//   {
-//     path: "/login",
-//     element: <LoginPage />,
-//   },
-//   {
-//     path: "/signup",
-//     element: <RegistrationPage />,
-//   },
-// ]);
-function App() {
+import useStorage from "./hooks/useStorage";
+import DashboardLayout from "./Layout/Layout";
+import LoginPage from "./pages/Login";
+import RegistrationPage from "./pages/Registration";
+
+const App: React.FC = () => {
+  const { cookies } = useStorage();
   const AppRoutes = () => {
     const element = useRoutes(
-      routes.map(route => ({
-        path: route.ref,
-        element: <CustomLayout><route.component title={route.title} /></CustomLayout>
-      }))
+      cookies.token
+        ? routes.map((route) => ({
+            path: route.ref,
+            element: (
+              <DashboardLayout>
+                <route.component title={route.title} />
+              </DashboardLayout>
+            ),
+          }))
+        : [
+            {
+              path: "/login",
+              element: <LoginPage />,
+            },
+            {
+              path: "/register",
+              element: <RegistrationPage />,
+            },
+            {
+              path: "*",
+              element: <Navigate to="/login" replace />,
+            },
+          ]
     );
     return element;
   };
   return (
     <>
-      <Router>
-        <AppRoutes />
-      </Router>
+      <MantineProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </MantineProvider>
       {/* <RouterProvider router={router} /> */}
     </>
   );
-}
+};
 
 export default App;

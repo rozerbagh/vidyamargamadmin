@@ -1,72 +1,115 @@
-import React, { useState, useEffect} from "react"
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Title,
+  Table,
+  Button,
+  // Checkbox,
+  ActionIcon,
+  Popover,
+  Flex,
+  Badge,
+  // Tooltip,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import AddBusForm from "../Layout/Modals/AddBusModalForm";
 import useFetch from "../hooks/useFetch";
+import {
+  IconEdit,
+  IconUpload,
+  IconTrash,
+  IconAdjustments,
+  IconBus,
+  IconNumber,
+  IconSpace,
+} from "@tabler/icons-react";
 type BusesProps = {
-  title: string,
-}
+  title: string;
+};
 const BusesListing: React.FC<BusesProps> = ({ title }) => {
-  const { loading, fetchSchoolsList, fetchBusesList } = useFetch();
-  const [openAddModal, setOpenAddModal] = useState(false);
-  const [schoolList, setSchoolList] = useState([]);
-  const [schoolId, setSchoolId] = useState("");
-  const [busType, setBusType] = useState("");
-  const [busNumber, setBusNumber] = useState("");
-  const [busCapacity, setBusCapacity] = useState("");
+  const { schoolId } = useParams();
+  const { fetchBusesList } = useFetch();
+  const [opened, { open, close }] = useDisclosure(false);
   const [busList, setBusList] = useState([]);
   useEffect(() => {
-    async function fetchSchools() {
-      const data = await fetchSchoolsList();
-      setSchoolList(data.response.data);
+    async function fetchBuses() {
+      const data = await fetchBusesList(schoolId);
+      setBusList(data);
     }
-    fetchSchools();
+    fetchBuses();
   }, []);
-  const handleSearchBuses = async () => {
-    const data = await fetchBusesList(schoolId);
-    setBusList(data);
-  };
   return (
     <>
-    <div className="table-header">
-      <h1>Buses Information</h1>
-      <select name="" id="schoolId" onChange={(e) => setSchoolId(e.target.value)}>
-        {schoolList.map((ele: any, idx: number) => (
-          <option value={ele._id} key={(idx + Math.random()).toString()}>{ele.name}</option>
-        ))}
-      </select>
-      <button className="btn btn-success" onClick={handleSearchBuses}>Search Buses</button>&nbsp;&nbsp;
-      <button
-        className="btn btn-primary"
-        onClick={() => setOpenAddModal(true)}
-      >
-        Add Buses
-      </button>
-    </div>
-      <div className="overflow-table-wrapper">
-        <table>
-          <thead>
-            <th>No.</th>
-            <th>Bus Type</th>
-            <th>Bus Number</th>
-            <th>Bus Capacity</th>
-            <th>Actions</th>
-          </thead>
-          <tbody>
+      <Flex direction="column" gap="md" p={20}>
+        <Flex justify="space-between" align="center" mt={20}>
+          <Title order={2}>Buses Information</Title>
+          <Button
+            className="btn-primary"
+            onClick={open}
+          >
+            Add Buses
+          </Button>
+        </Flex>
+        <Table withColumnBorders withTableBorder>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>No.</Table.Th>
+              <Table.Th>Bus Type</Table.Th>
+              <Table.Th>Bus Number</Table.Th>
+              <Table.Th>Bus Capacity</Table.Th>
+              <Table.Th>GPS ID</Table.Th>
+              <Table.Th>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {busList.map((ele: any, idx: number) => (
-              <tr key={(idx + Math.random()).toString()}>
-                <td>{idx + 1}</td>
-                <td>{ele.busname}</td>
-                <td>{ele.numberplate}</td>
-                <td>{ele.capacity}</td>
-                <td>
-                  <button className="btn btn-primary">Edit</button>
-                  <button className="btn btn-danger">Delete</button>
-                </td>
-              </tr>
+              <Table.Tr key={(idx + Math.random()).toString()}>
+                <Table.Td>{idx + 1}</Table.Td>
+                <Table.Td><ActionIcon variant="light"><IconBus size={16} /></ActionIcon> &nbsp;{ele.busname}</Table.Td>
+                <Table.Td><ActionIcon variant="light"><IconNumber size={16} /></ActionIcon> &nbsp;{ele.numberplate}</Table.Td>
+                <Table.Td><ActionIcon variant="light"><IconSpace size={16} /></ActionIcon> &nbsp;{ele.capacity}</Table.Td>
+                <Table.Td>
+                  <Badge variant="light" size="lg" color="teal">{ele.gps_id}</Badge>
+                </Table.Td>
+                <Table.Td>
+                  <Popover position="bottom" withArrow shadow="md">
+                    <Popover.Target>
+                      <ActionIcon variant="light">
+                        <IconAdjustments size={24} />
+                      </ActionIcon>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <ActionIcon className="success-button">
+                        <IconEdit size={18} />
+                      </ActionIcon>
+                      &nbsp;
+                      <ActionIcon className="info-button">
+                        <IconUpload size={18} />
+                      </ActionIcon>
+                      &nbsp;
+                      <ActionIcon className="danger-button">
+                        <IconTrash size={18} />
+                      </ActionIcon>
+                    </Popover.Dropdown>
+                  </Popover>
+                </Table.Td>
+              </Table.Tr>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </Table.Tbody>
+        </Table>
+      </Flex>
+      
+      
+      {opened && (
+        <AddBusForm
+          schoolId={schoolId}
+          opened={opened}
+          close={close}
+        />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default BusesListing
+export default BusesListing;

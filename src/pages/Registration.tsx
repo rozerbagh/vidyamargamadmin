@@ -1,12 +1,15 @@
 import React from "react";
+import useStorage from "../hooks/useStorage";
 
 const RegistrationPage: React.FC = () => {
+  const {setCookie} = useStorage();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget);
     const email = formData.get('login-email') as string;
     const password = formData.get('login-password') as string;
     console.log('Success:', { email, password });
+    setCookie("token", "1234567890")
   };
   return (
     <div className="login-wrapper">

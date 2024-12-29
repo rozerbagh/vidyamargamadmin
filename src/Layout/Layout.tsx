@@ -1,17 +1,21 @@
 import React from 'react';
 // import * as theme from '../theme/theme'
-import Sidebar from './Sidebar';
-import Header from './Header';
+// import Sidebar from './Sidebar/Sidebar';
+// import { Grid } from '@mantine/core';
+import Header from './Header/Header';
+import Footer from './Footer/Footer';
 import { CustomLayoutProps } from "../Interfaces/PagesInterfaces"
-
+import { NavbarSimpleColored } from './Sidebar/Navbar';
 const CustomLayout: React.FC<CustomLayoutProps> = ({ children }) => {
   return (
-    <>
-      <Header/>
-      <Sidebar/>
+    <div className="layout-wrapper">
+      <aside><NavbarSimpleColored /></aside>
+      <header><Header /></header>
       <main>{children}</main>
-      <footer></footer>
-    </>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   );
 };
 

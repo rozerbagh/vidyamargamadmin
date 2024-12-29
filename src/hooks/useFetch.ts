@@ -1,8 +1,11 @@
 import { useState } from "react";
 import axios, { AxiosResponse } from "axios";
 import { baseURL } from "./http";
+import useStorage from "./useStorage";
+import { SchoolsWithBuses } from "../Interfaces/DataInterface/data.interface";
 
 function useFetch() {
+  const { cookies } = useStorage();
   const [loading, setLoading] = useState(false);
   const fetchData = async (url: string, _setStates: (data: any) => void) => {
     setLoading(false);
@@ -43,9 +46,11 @@ function useFetch() {
 
   const fetchSchoolsList = async (): Promise<any> => {
     setLoading(true);
-    const url = `${baseURL}/app/school/all?admintkn=vidyamargamadmin`;
+    const url = `${baseURL}/app/school/all`;
     try {
-      const response: AxiosResponse = await axios.get(url);
+      const response: AxiosResponse = await axios.get(url, {
+        headers: { Authorization: `Bearer ${cookies.token}` },
+      });
       const userData = response.data;
       setLoading(false)
       return userData;
@@ -62,7 +67,30 @@ function useFetch() {
     }
   };
 
-  const fetchBusesList = async (schoolId: string): Promise<any> => {
+  const fetchSchoolsIdsAndNames = async (): Promise<SchoolsWithBuses[]> => {
+    setLoading(true);
+    const url = `${baseURL}/app/schools/ids?admintkn=vidyamargamadmin`;
+    try {
+      const response: AxiosResponse = await axios.get(url, {
+        headers: { Authorization: `Bearer ${cookies.token}` },
+      });
+      const _data = response.data.response.data;
+      setLoading(false);
+      return _data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Handle Axios-specific errors
+        console.error("Axios error:", error.message);
+      } else {
+        // Handle general errors
+        console.error("General error:", error);
+      }
+      setLoading(false);
+      return [];
+    }
+  };
+
+  const fetchBusesList = async (schoolId: string | undefined): Promise<any> => {
     setLoading(true);
     const url = `${baseURL}/app/school/bus/all/${schoolId}?admintkn=vidyamargamadmin`;
     try {
@@ -82,12 +110,35 @@ function useFetch() {
       return null;
     }
   };
+  
+  const fetchStudentsList = async (parenId: string | undefined): Promise<any> => {
+    setLoading(true);
+    const url = `${baseURL}/app/students/parent-lists/${parenId}?admintkn=vidyamargamadmin`;
+    try {
+      const response: AxiosResponse = await axios.get(url);
+      const _data = response.data.response.data;
+      setLoading(false);
+      return _data;
+    } catch (error){
+      if (axios.isAxiosError(error)) {
+        // Handle Axios-specific errors
+        console.error("Axios error:", error.message);
+      } else {
+        // Handle general errors
+        console.error("General error:", error);
+      }
+      setLoading(false);
+      return [];
+    }
+  }
   return {
     loading,
     fetchData,
     fetchUsersList,
     fetchSchoolsList,
     fetchBusesList,
+    fetchStudentsList,
+    fetchSchoolsIdsAndNames,
   };
 }
 

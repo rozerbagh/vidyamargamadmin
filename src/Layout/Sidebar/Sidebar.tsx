@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import routes from '../routes';
+import routes from '../../routes';
 
 // Define MenuItemType
 type MenuItemType = {
@@ -26,13 +26,13 @@ function getItem(
   } as MenuItemType;
 }
 function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  // const [collapsed, setCollapsed] = useState(false);
   return (
     <aside>
       <ul className="sidebar-nav-lists">
-        {routes.map((route, idx)=>(
-          <li className="sidebar-nav-list-item" key={idx}><Link to={route.ref}>{route.name}</Link></li>
-        ))}
+        {routes.map((route, idx)=> route.flag ? (
+          <li className="sidebar-nav-list-item" key={(idx + Math.random()).toString()}><Link to={route.ref}>{route.name}</Link></li>
+        ): null)}
       </ul>
     </aside>
   )

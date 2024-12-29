@@ -1,8 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
+import {
+  Select,
+  Input,
+  Button,
+  Modal,
+  Flex,
+  Text,
+  Box,
+  PasswordInput,
+  TextInput,
+} from "@mantine/core";
+import {
+  IconAt,
+  IconMapPin,
+  IconPhone,
+  IconLock,
+  IconSchool,
+} from "@tabler/icons-react";
 import useFetch from "../../hooks/useFetch";
-import ModalLayout from "./ModalLayout";
+import useAdd from "../../hooks/useAdd";
 type AddressProps = {
   Name: string;
   Description: null;
@@ -19,39 +36,31 @@ type AddressProps = {
 };
 const initialAddresses: AddressProps[] = [];
 interface AddFormtypes {
-  open?: boolean;
+  open?: any;
   handleCancel: () => void;
   handleOk: () => void;
 }
+
 const AddSchoolForm: React.FC<AddFormtypes> = ({
   open,
   handleCancel,
   handleOk,
 }) => {
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      address: "",
-      status: "",
-      email: "",
-      password: "",
-      phoneno: "",
-      users: "",
-    },
-    onSubmit: (values) => {
-      console.log(values);
-      handleOk();
-    },
-  });
+  const { addSchools } = useAdd();
   const [schoolName, setSchoolName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [pincode, setPincode] = useState("");
   const [addresses, setAddresses] = useState<AddressProps[]>(initialAddresses);
-  const [selectedAddress, setSelectedAddress] = useState<AddressProps | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<AddressProps | null>(
+    null
+  );
   const { fetchData } = useFetch();
   useEffect(() => {
     if (pincode.length >= 6) {
       const url = `https://api.postalpincode.in/pincode/${pincode}`;
-      fetchData(url, (data) =>{
+      fetchData(url, (data) => {
         console.log(data);
         setAddresses(data[0]["PostOffice"]);
       });
@@ -65,66 +74,109 @@ const AddSchoolForm: React.FC<AddFormtypes> = ({
   const handleChangeAddress = (value: string) => {
     const _address: AddressProps = JSON.parse(value);
     setSelectedAddress(_address);
-  }
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result = await addSchools(
+      "app/school/add",
+      {
+        name: schoolName,
+        address: {
+          street: selectedAddress?.Name,
+          landmark: selectedAddress?.Name,
+          district: selectedAddress?.District,
+          state: selectedAddress?.State,
+          pincode: selectedAddress?.Pincode,
+          country: selectedAddress?.Country,
+        },
+        email,
+        password,
+        phoneno: phone,
+      },
+      () => {}
+    );
+    if (result.statusCode === 200) {
+      handleOk();
+    }
+  };
   return (
-    <ModalLayout
+    <Modal
+      opened={open}
+      onClose={handleCancel}
       title="Add School"
-      handleCancel={() => {}}
-      handleOk={() => {}}
-      okText=""
+      centered
+      size="md"
     >
-      <form>
-        <div className="modal-body">
-          <input
+      <Box p={20}>
+        <form onSubmit={handleSubmit}>
+          <Text>School Name</Text>
+          <TextInput
             id="school-name"
             type="text"
             placeholder="Enter School Name"
             onChange={(e) => setSchoolName(e.target.value)}
+            mb={10}
+            leftSection={<IconSchool size={16} />}
           />
-          <input
+          <Text>School Pincode</Text>
+          <Input
             id="school-pincode"
             type="text"
             placeholder="Enter School pincode"
             onChange={(e) => setPincode(e.target.value)}
+            mb={10}
+            leftSection={<IconMapPin size={16} />}
           />
-          <input
+          <Text>School Email</Text>
+          <Input
             id="school-email"
             type="email"
             placeholder="Enter School email"
-            onChange={(e) => setPincode(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            mb={10}
+            leftSection={<IconAt size={16} />}
           />
-          <input
+          <Text>School Password</Text>
+          <PasswordInput
             id="school-password"
             type="password"
             placeholder="Enter Password"
-            onChange={(e) => setPincode(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
+            mb={10}
+            leftSection={<IconLock size={16} />}
           />
-          <input
+          <Text>School Phone</Text>
+          <Input
             id="school-phone"
             type="text"
             placeholder="Enter School phone no"
-            onChange={(e) => setPincode(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)}
+            mb={10}
+            leftSection={<IconPhone size={16} />}
           />
-          <select
+          <Text>School Address</Text>
+          <Select
             className="margin-top"
             style={{ width: "100%" }}
             defaultValue={selectedAddress?.Name}
-            onChange={(e) => handleChangeAddress(e.target.value)}
-          >
-            <option value="" disabled>Select Address</option>
-            {addresses.map((ele, idx) => (
-              <option key={(idx + Math.random()).toString()} value={JSON.stringify(ele)}>{ele?.Name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="modal-footer">
-          <button type="submit" className="btn-success">Submit</button>&nbsp;
-          <button type="button" className="btn-danger" onClick={handleCancel}>
-            Cancel
-          </button>
-        </div>
-      </form>
-    </ModalLayout>
+            onChange={(_value, option) => handleChangeAddress(option.value)}
+            data={addresses.map((ele, idx) => ({
+              value: JSON.stringify(ele),
+              label: ele?.Name,
+            }))}
+            mb={10}
+          />
+          <Flex justify="flex-end" gap="sm" mt={20}>
+            <Button type="submit" color="green" ms={10}>
+              Submit
+            </Button>
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Flex>
+        </form>
+      </Box>
+    </Modal>
   );
 };
 export default AddSchoolForm;

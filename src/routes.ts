@@ -1,74 +1,75 @@
 // Define MenuItemType
 import React from "react";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import RegisterPage from "./pages/Registration";
 import Schools from "./pages/Schools/Schools";
-import Users from "./pages/Users";
+import Users from "./pages/Users/Users";
 import Buses from "./pages/Buses";
 import Students from "./pages/Students";
-import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
-import {
-  faEnvelope,
-  faDeleteLeft,
-  faBook,
-} from "@fortawesome/free-solid-svg-icons";
+import { IconHome, IconSchool, IconBus, IconUser } from "@tabler/icons-react";
+import UsersDetails from "./pages/Users/UsersDetails";
 type RoutesType = {
   name: string;
   ref: string;
+  segment?: string;
   component: React.ComponentType<any>;
-  icon?: React.ReactNode;
+  icon?: any;
   title?: string;
+  flag?: boolean;
 };
 const routes: RoutesType[] = [
   {
     name: "Dashboard",
     ref: "/",
+    segment: "dashboard",
     component: Home,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
+    icon: IconHome,
     title: "VidyaMargam",
+    flag: true,
   },
   {
     name: "Schools",
     ref: "/schools",
+    segment: "schools",
     component: Schools,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
+    icon: IconSchool,
     title: "Schools",
+    flag: true,
   },
   {
     name: "Buses",
-    ref: "/buses",
+    ref: "/buses/:schoolId",
+    segment: "buses",
     component: Buses,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
+    icon: IconBus,
     title: "Buses List",
+    flag: false,
   },
   {
     name: "Parents",
     ref: "/parents",
+    segment: "parents",
     component: Users,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
+    icon: IconUser,
     title: "Customers",
+    flag: true,
+  },
+  {
+    name: "Users",
+    ref: "/users/:id",
+    segment: "users",
+    component: UsersDetails,
+    icon: IconUser,
+    title: "Users",
+    flag: false,
   },
   {
     name: "Students",
-    ref: "/students",
+    ref: "/students/:fullname/:parentId",
+    segment: "students",
     component: Students,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
+    icon: IconUser,
     title: "Students",
-  },
-  {
-    name: "Login",
-    ref: "/login",
-    component: Login,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
-    title: "Login",
-  },
-  {
-    name: "Signup",
-    ref: "/signup",
-    component: RegisterPage,
-    // icon: <FontAwesomeIcon icon={faDeleteLeft} />,
-    title: "Signup",
+    flag: false,
   },
 ];
 export default routes;

@@ -1,63 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from "react";
-import ModalLayout from "./ModalLayout";
-
-type InputProps = {
-  type: string;
-  label: string;
-  placeholder: string;
-  valid: boolean;
-  value: any | undefined;
-};
-type FormInputsProps = {
-  [key: string]: InputProps;
-};
-const initialFormInputs: FormInputsProps = {
-  username: {
-    type: "text",
-    label: "Username",
-    placeholder: "Enter your username...",
-    valid: false,
-    value: "",
-  },
-  fullname: {
-    type: "text",
-    label: "Full Name",
-    placeholder: "Enter your full name...",
-    valid: false,
-    value: "",
-  },
-  email: {
-    type: "email",
-    label: "Email",
-    placeholder: "Enter your email...",
-    valid: false,
-    value: "",
-  },
-  password: {
-    type: "password",
-    label: "Password",
-    placeholder: "Enter your password...",
-    valid: false,
-    value: "",
-  },
-  phoneno: {
-    type: "text",
-    label: "Phone Number",
-    placeholder: "Enter your phone number...",
-    valid: false,
-    value: "",
-  },
-};
+import React from "react";
+import { Select, Input, Button, Modal, Flex, Box, PasswordInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import {
+  IconAt,
+  IconPhone,
+  IconLock,
+  IconSchool,
+} from "@tabler/icons-react";
 
 type AddCustomerFormProps = {
   // setValues: (key: string, value: any) => void;
   handleCancel: () => void;
-  handleOk: () => void;
-  open: boolean;
+  handleOk?: () => void;
+  opened: any;
   handleSubmit: (
     e: React.MouseEvent<HTMLButtonElement>,
     data: {
+      username: string;
       fullname: string;
       email: string;
       password: string;
@@ -71,73 +31,103 @@ const AddCustomerForm: React.FC<AddCustomerFormProps> = ({
   // setValues,
   handleCancel,
   handleOk,
-  open,
+  opened,
   handleSubmit,
 }) => {
-  const [formInputs, setFormInputs] =
-    useState<FormInputsProps>(initialFormInputs);
-  const handleUpdateInputValue = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    inputKey: string,
-    newValue: any
-  ) => {
-    // setValues(inputKey, newValue);
-    setFormInputs((prevFormInputs) => ({
-      ...prevFormInputs,
-      [inputKey]: {
-        ...prevFormInputs[inputKey],
-        value: newValue,
-      },
-    }));
-  };
+  const form = useForm({
+    initialValues: {
+      username: "",
+      fullname: "",
+      email: "",
+      password: "",
+      phoneno: "",
+      role: "",
+      gps_id: "353201357112595",
+    },
+    validate: {
+      fullname: (value) =>
+        value.length < 3 ? "Name must be at least 3 characters" : null,
+      email: (value) =>
+        value.length < 3 ? "Email must be at least 3 characters" : null,
+      password: (value) =>
+        value.length < 3 ? "Password must be at least 3 characters" : null,
+      phoneno: (value) =>
+        value.length < 3 ? "Phone number must be at least 3 characters" : null,
+    },
+  });
   return (
-    <ModalLayout
+    <Modal
+      opened={opened}
+      onClose={handleCancel}
       title="Add School"
-      handleCancel={handleCancel}
-      handleOk={handleOk}
-      okText=""
+      centered
+      size="md"
     >
-      <div className="modal-body">
+      <Box p={20}>
         <form>
-          {Object.keys(formInputs).map((key: any, index: number) => (
-            <div
-              key={(index + Math.random()).toString()}
-              className="margin-top"
-            >
-              <input
-                placeholder={formInputs[key].placeholder}
-                type={formInputs[key].type}
-                value={formInputs[key].value}
-                onChange={(e) => handleUpdateInputValue(e, key, e.target.value)}
-              />
-            </div>
-          ))}
-        </form>
-      </div>
-
-      <div className="modal-footer">
-        <button
-          type="button"
-          className="btn-success"
-          onClick={(e) =>
-            handleSubmit(e, {
-              fullname: formInputs.fullname.value,
-              email: formInputs.email.value,
-              password: formInputs.password.value,
-              phoneno: formInputs.phoneno.value,
-              role: 3,
+          <Input
+            mb={10}
+            leftSection={<IconSchool size={16} />}
+            placeholder="Enter your username..."
+            value={form.values.fullname}
+            type="text"
+            onChange={(e) => form.setFieldValue("fullname", e.target.value)}
+          />
+          <Input
+            mb={10}
+            leftSection={<IconAt size={16} />}
+            placeholder="Enter your email..."
+            value={form.values.email}
+            type="email"
+            onChange={(e) => form.setFieldValue("email", e.target.value)}
+          />
+          <PasswordInput
+            mb={10}
+            leftSection={<IconLock size={16} />}
+            placeholder="Enter your password..."
+            value={form.values.password}
+            type="password"
+            onChange={(e) => form.setFieldValue("password", e.target.value)}
+          />
+          <Input
+            mb={10}
+            leftSection={<IconPhone size={16} />}
+            placeholder="Enter your phone number..."
+            value={form.values.phoneno}
+            type="tel"
+            onChange={(e) => form.setFieldValue("phoneno", e.target.value)}
+          />
+          <Select
+            mb={10}
+            data={[
+              { value: "1", label: "Admin" },
+              { value: "2", label: "School" },
+              { value: "3", label: "Parent" },
+              { value: "4", label: "Driver" },
+            ]}
+            placeholder="Select your role..."
+            value={form.values.role.toString()}
+            onChange={(value) => form.setFieldValue("role", (value ?? "3"))}
+          />
+          <Flex justify="flex-end" gap="sm" mt={20}>
+            <Button type="button" onClick={(e) => handleSubmit(e, {
+              username: form.values.username,
+              fullname: form.values.fullname,
+              email: form.values.email,
+              password: form.values.password,
+              phoneno: form.values.phoneno,
+              role: parseInt(form.values.role),
               gps_id: "353201357112595",
-            })
-          }
-        >
-          Submit
-        </button>
-        &nbsp;
-        <button type="button" className="btn-danger" onClick={handleCancel}>
-          Cancel
-        </button>
-      </div>
-    </ModalLayout>
+            })}>
+              Submit
+            </Button>
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Flex>
+        </form>
+      </Box>
+    </Modal>
   );
 };
 
